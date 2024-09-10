@@ -35,9 +35,9 @@ class test_Member_Model(TestCase):
         self.user1=User.objects.create(username='user1',password='user1')
         self.user2=User.objects.create(username='user2',password='user2')
         self.group1=groups.objects.create()
-        self.resid1=groups.objects.create()
+        self.resid1=resid.objects.create()
         member.objects.create(debt_or_credit_amount=100,user=self.user1,groups=self.group1,resid=self.resid1)
-        member.objects.create(debt_or_credit_amount=-100',user=self.user2,groups=self.group1,resid=self.resid1)
+        member.objects.create(debt_or_credit_amount=-100,user=self.user2,groups=self.group1,resid=self.resid1)
     def test_the_status_of_debtor_or_creditor_of_the_member(self): #this func tests the status of debtor or creditor of a member based on the debt or credit amount.
         member1=member.objects.get(user=self.user1)
         member2=member.objects.get(user=self.user2)
