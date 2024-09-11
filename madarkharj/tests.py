@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
-from madarkharj.models import member,groups,bill,dong
+from madarkharj.models import member,group,bill,dong
 
 
 
@@ -34,10 +34,15 @@ class test_Member_Model(TestCase):
     def setUp(self):
         self.user1=User.objects.create(username='user1',password='user1')
         self.user2=User.objects.create(username='user2',password='user2')
-        self.group1=groups.objects.create()
+        self.group1=group.objects.create()
         self.bill1=bill.objects.create()
-        member.objects.create(debt_or_credit_amount=100,user=self.user1,groups=self.group1,bill=self.bill1)
-        member.objects.create(debt_or_credit_amount=-100,user=self.user2,groups=self.group1,bill=self.bill1)
+        member.objects.create(debt_or_credit_amount=100,user=self.user1,group=self.group1,bill=self.bill1)
+        member.objects.create(debt_or_credit_amount=-100,user=self.user2,group=self.group1,bill=self.bill1)
+    def test_debt_status_feild_based_on_debt_or_credit_amount(self): #this func tests that debt status has the correct status based on the debt_or_credit_amount feild.
+        member1=member.objects.get(user=self.user1)
+        member2=member.objects.get(user=self.user2)
+        self.assertEqual(member1.debt_status,False)
+        self.assertEqual(member2.debt_status,True)
     def test_the_status_of_debtor_or_creditor_of_the_member(self): #this func tests the status of debtor or creditor of a member based on the debt or credit amount.
         member1=member.objects.get(user=self.user1)
         member2=member.objects.get(user=self.user2)
