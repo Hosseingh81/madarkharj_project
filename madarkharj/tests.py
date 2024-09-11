@@ -35,11 +35,9 @@ class test_Member_Model(TestCase):
         self.user1=User.objects.create(username='user1',password='user1')
         self.user2=User.objects.create(username='user2',password='user2')
         self.user3=User.objects.create(username='user3',password='user3')
-        self.group1=Group.objects.create()
-        self.bill1=Bill.objects.create()
-        Member.objects.create(debt_or_credit_amount=100,user=self.user1,group=self.group1,bill=self.bill1)
-        Member.objects.create(debt_or_credit_amount=-100,user=self.user2,group=self.group1,bill=self.bill1)
-        Member.objects.create(debt_or_credit_amount=0,user=self.user3,group=self.group1,bill=self.bill1)
+        Member.objects.create(debt_or_credit_amount=100,user=self.user1)
+        Member.objects.create(debt_or_credit_amount=-100,user=self.user2)
+        Member.objects.create(debt_or_credit_amount=0,user=self.user3)
     def test_debt_status_feild_based_on_debt_or_credit_amount(self): #this func tests that debt status has the correct status based on the debt_or_credit_amount feild.
         member1=Member.objects.get(user=self.user1)
         member2=Member.objects.get(user=self.user2)
@@ -47,9 +45,9 @@ class test_Member_Model(TestCase):
         print('member1',member1.debt_status)
         print('member2',member2.debt_status)
         print('member3',member3.debt_status)
-        self.assertEqual(member1.debt_status,False)
-        self.assertEqual(member2.debt_status,True)
-        self.assertEqual(member3.debt_status,False)
+        self.assertFalse(member1.debt_status)
+        self.assertTrue(member2.debt_status)
+        self.assertFalse(member3.debt_status)
     def test_the_status_of_debtor_or_creditor_of_the_member(self): #this func tests the status of debtor or creditor of a member based on the debt or credit amount.
         member1=Member.objects.get(user=self.user1)
         member2=Member.objects.get(user=self.user2)
@@ -65,3 +63,16 @@ class test_Member_Model(TestCase):
         self.assertEqual(member2.debt_or_credit_amount,-100)
         self.assertEqual(member3.debt_or_credit_amount,0)
 
+class Test_Group_Model(TestCase):
+    def setUp(self):
+        self.member1=Member.objects.create(debt_or_credit_amount=100,user=self.user1)
+        self.dong1=self.dong1=Dong.objects.create()
+        Group.objects.create(member=self.member1,dong=self.dong1)
+    def test_Group_Model_feilds_is_not_none(self): #this func tests that Group model feilds are saving the data correctly and not none.
+        self.group1=Group.objects.get(dong=self.dong1)
+        self.assertIsNotNone(self.group1.member,msg='member of group1 is none.')
+        self.assertIsNotNone(self.group1.dong,msg='dong of group1 is none.')
+    def test_Group_Model_feilds_types_saved_correctly(self): #this func tests that the type Group Model feilds saved correctly in the database.
+        self.group1=Group.objects.get(dong=self.dong1)
+        self.assertFieldOutput(self.group1.dong,{self.dong1:self.dong1},{self.member1:['invalid']})
+        self.assertFieldOutput(self.group1.member,{self.member1:self.member1},{self.dong1:['invalid']})

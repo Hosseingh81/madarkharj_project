@@ -9,8 +9,6 @@ class Bill(models.Model):
 class Member(models.Model):
     user=models.ForeignKey(User,  on_delete=models.CASCADE)
     debt_or_credit_amount=models.IntegerField(default=0)
-    group=models.ForeignKey(Group, on_delete=models.CASCADE)
-    bill=models.ForeignKey(Bill , on_delete=models.CASCADE)
     debt_status=models.BooleanField(default=False)
     def __init__(self,*args,**kwargs):
         super(Member,self).__init__(*args, **kwargs)
