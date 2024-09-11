@@ -34,23 +34,31 @@ class test_Member_Model(TestCase):
     def setUp(self):
         self.user1=User.objects.create(username='user1',password='user1')
         self.user2=User.objects.create(username='user2',password='user2')
+        self.user3=User.objects.create(username='user3',password='user3')
         self.group1=group.objects.create()
         self.bill1=bill.objects.create()
         member.objects.create(debt_or_credit_amount=100,user=self.user1,group=self.group1,bill=self.bill1)
         member.objects.create(debt_or_credit_amount=-100,user=self.user2,group=self.group1,bill=self.bill1)
+        member.objects.create(debt_or_credit_amount=0,user=self.user2,group=self.group1,bill=self.bill1)
     def test_debt_status_feild_based_on_debt_or_credit_amount(self): #this func tests that debt status has the correct status based on the debt_or_credit_amount feild.
         member1=member.objects.get(user=self.user1)
         member2=member.objects.get(user=self.user2)
+        member3=member.objects.get(user=self.user3)
         self.assertEqual(member1.debt_status,False)
         self.assertEqual(member2.debt_status,True)
+        self.assertEqual(member3.debt_status,False)
     def test_the_status_of_debtor_or_creditor_of_the_member(self): #this func tests the status of debtor or creditor of a member based on the debt or credit amount.
         member1=member.objects.get(user=self.user1)
         member2=member.objects.get(user=self.user2)
+        member3=member.objects.get(user=self.user3)
         self.assertEqual(member1.the_debt_or_credit_status(),'creditor')
         self.assertEqual(member2.the_debt_or_credit_status(),'debtor')
+        self.assertEqual(member3.the_debt_or_credit_status(),'0')
     def test_the_amount_of_depts_or_credits(self):
         member1=member.objects.get(user=self.user1)
         member2=member.objects.get(user=self.user2)
+        member3=member.objects.get(user=self.user3)
         self.assertEqual(member1.the_debt_or_credit_status(),100)
         self.assertEqual(member2.the_debt_or_credit_status(),-100)
+        self.assertEqual(member3.the_debt_or_credit_status(),0)
 
