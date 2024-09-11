@@ -8,7 +8,7 @@ class groups(models.Model):
     pass
 
 
-class resid(models.Model):
+class bill(models.Model):
     pass
 
 class dong(models.Model):
