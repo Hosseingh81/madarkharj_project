@@ -6,30 +6,30 @@ from freezegun import freeze_time
 import datetime
 from django.utils import timezone
 
-# class Main_User_Page_Test(TestCase):
-#     def creating_user1(self):
-#         self.user1=User.objects.create(username='user1',password='user1')
-#         self.client.force_login(user=self.user1)
-#     def accessing_the_main_page_url(self):
-#         url=reverse('madarkharj:mainpage',args=(self.user1.id,))
-#         return self.client.get(url)
-#     def test_the__main_user_page_returns_the_200_status_code(self): #this func tests that the user main page returns the 200 status code.
-#         self.creating_user1()
-#         response=self.accessing_the_main_page_url()
-#         self.assertEqual(response.status_code,200)
-#     def test_main_user_page_uses_the_correct_template(self): #this func tests that the main user page uses the correct template.
-#         self.creating_user1()
-#         response=self.accessing_the_main_page_url()
-#         self.assertTemplateUsed(response,template_name='madarkharj/main_page.html')
+class Main_User_Page_Test(TestCase):
+    def create_user1(self):
+        self.user1=User.objects.create(username='user1',password='user1')
+        self.client.force_login(user=self.user1)
+    def access_the_main_page_url(self):
+        url=reverse("madarkharj:mainpage",args=(self.user1.username,))
+        return self.client.get(url)
+    def test_the__main_user_page_returns_the_200_status_code(self): #this func tests that the user main page returns the 200 status code.
+        self.create_user1()
+        response=self.access_the_main_page_url()
+        self.assertEqual(response.status_code,200)
+    def test_main_user_page_uses_the_correct_template(self): #this func tests that the main user page uses the correct template.
+        self.create_user1()
+        response=self.access_the_main_page_url()
+        self.assertTemplateUsed(response,template_name='madarkharj/main_page.html')
 #     def test_not_logged_in_user_can_not_visit_main_user_page(self): #this func tests that the not logged in user can't visit the main user page by comparing it's template with the main user page template.
-#         response=self.accessing_the_main_page_url()
+#         response=self.access_the_main_page_url()
 #         self.assertTemplateNotUsed(response,template_name='madarkharj/main_page.html')
 #     def test_not_logged_in_user_redirects_it_it_tries_to_visit_main_user_page(self): # this func test that the not logged in user redirects when it tries to visit main page user by checking the status code.
-#         response=self.accessing_the_main_page_url()
+#         response=self.access_the_main_page_url()
 #         self.assertEqual(response.status_code,301)
 #         self.assertEqual(response.status_code,302)
 #     def test_not_logged_in_user_redirects_to_the_login_page_it_it_tries_to_visit_main_page_user(self): #this func tests that the web app redirects not loggedin user to the login page.
-#         response=self.accessing_the_main_page_url()
+#         response=self.access_the_main_page_url()
 #         self.assertRedirects(response,'accounts/login/')
 class test_Member_Model(TestCase):
     def setUp(self):
@@ -39,7 +39,7 @@ class test_Member_Model(TestCase):
         Member.objects.create(debt_or_credit_amount=100,user=self.user1)
         Member.objects.create(debt_or_credit_amount=-100,user=self.user2)
         Member.objects.create(debt_or_credit_amount=0,user=self.user3)
-    def test_debt_status_feild_based_on_debt_or_credit_amount(self): #this func tests that debt status has the correct status based on the debt_or_credit_amount feild.
+    def test_debt_status_field_based_on_debt_or_credit_amount(self): #this func tests that debt status has the correct status based on the debt_or_credit_amount field.
         member1=Member.objects.get(user=self.user1)
         member2=Member.objects.get(user=self.user2)
         member3=Member.objects.get(user=self.user3)
@@ -60,7 +60,7 @@ class test_Member_Model(TestCase):
         self.assertEqual(member1.debt_or_credit_amount,100)
         self.assertEqual(member2.debt_or_credit_amount,-100)
         self.assertEqual(member3.debt_or_credit_amount,0)
-    def test_the_updated_at_feild_saves_the_correct_date(self): # this func tests that updated_at and joined_at fields saves the date of updating and joining the member correctly.
+    def test_the_updated_at_field_saves_the_correct_date(self): # this func tests that updated_at and joined_at fields saves the date of updating and joining the member correctly.
         initial_datetime = datetime.datetime(year=1971, month=1, day=1,hour=1, minute=1, second=1)
         other_datetime = datetime.datetime(year=1973, month=1, day=1,hour=1, minute=3, second=2)
         with freeze_time(initial_datetime) as frozen_datetime:
@@ -83,10 +83,10 @@ class Test_Group_Model(TestCase):
         group.member.add(self.member1,self.member2)
         group.save()
 
-    def test_Group_Model_feilds_is_not_none(self): #this func tests that Group model feilds are saving the data correctly and not none.
+    def test_Group_Model_fields_is_not_none(self): #this func tests that Group model fields are saving the data correctly and not none.
         group1=Group.objects.get(id=1)
         self.assertIsNotNone(group1.member.last(),msg='member of group1 is none.')
-    def test_Group_Model_feilds_types_saved_correctly(self): #this func tests that the type Group Model feilds saved correctly in the database.
+    def test_Group_Model_fields_types_saved_correctly(self): #this func tests that the type Group Model fields saved correctly in the database.
         group1=Group.objects.get(id=1)
         self.assertIn(self.member1,group1.member.all())
         self.assertIn(self.member2,group1.member.all())
