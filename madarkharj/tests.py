@@ -72,17 +72,25 @@ class test_Member_Model(TestCase):
             self.assertEqual(member.updated_at,timezone.now())
 class Test_Group_Model(TestCase):
     def setUp(self):
-        self.user1=User.objects.create(username='user1',password='user1')
-        self.member1=Member.objects.create(debt_or_credit_amount=100,user=self.user1)
-        self.group=Group.objects.create()
+        user1=User.objects.create(username='user1',password='user1')
+        user2=User.objects.create(username='user2',password='user2')
+        self.member1=Member(user=user1,debt_or_credit_amount=0)
+        self.member2=Member(user=user2,debt_or_credit_amount=100)
         self.member1.save()
-        self.group.member.add(self.member1)
-        print(x for x in Group.objects.all())
-        
+        self.member2.save()
+        group=Group()
+        group.save()
+        group.member.add(self.member1,self.member2)
+        group.save()
+
     def test_Group_Model_feilds_is_not_none(self): #this func tests that Group model feilds are saving the data correctly and not none.
-        self.group1=Group.objects.get(id=1)
-        print(self.group.member)
-        self.assertIsNotNone(self.group1.member,msg='member of group1 is none.')
-    # def test_Group_Model_feilds_types_saved_correctly(self): #this func tests that the type Group Model feilds saved correctly in the database.
-    #     self.group1=Group.objects.filter(member=self.member1)
-    #     self.assertFieldOutput(self.group1.member,{self.member1:self.member1},{'testinput':['invalid']})
+        group1=Group.objects.get(id=1)
+        self.assertIsNotNone(group1.member.last(),msg='member of group1 is none.')
+    def test_Group_Model_feilds_types_saved_correctly(self): #this func tests that the type Group Model feilds saved correctly in the database.
+        group1=Group.objects.get(id=1)
+        self.assertIn(self.member1,group1.member.all())
+        self.assertIn(self.member2,group1.member.all())
+        self.assertEqual(group1.member.all()[0],self.member1)
+        self.assertEqual(group1.member.all()[1],self.member2)
+
+        
