@@ -1,15 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
-class Group(models.Model):
-    pass
-
-class Bill(models.Model):
-    pass
 
 class Member(models.Model):
     user=models.ForeignKey(User,  on_delete=models.CASCADE)
     debt_or_credit_amount=models.IntegerField(default=0)
     debt_status=models.BooleanField(default=False)
+    joined_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
     def __init__(self,*args,**kwargs):
         super(Member,self).__init__(*args, **kwargs)
         if self.debt_or_credit_amount <0:
@@ -22,9 +19,15 @@ class Member(models.Model):
         else:
             return '0'
 
-
-
-
 class Dong(models.Model):
     pass
+
+class Group(models.Model):
+    member=models.ManyToManyField(Member)
+
+class Bill(models.Model):
+    pass
+
+
+
 

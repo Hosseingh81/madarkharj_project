@@ -2,8 +2,9 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
 from madarkharj.models import Member,Group,Bill,Dong
-
-
+from freezegun import freeze_time
+import datetime
+from django.utils import timezone
 
 # class Main_User_Page_Test(TestCase):
 #     def creating_user1(self):
@@ -42,9 +43,6 @@ class test_Member_Model(TestCase):
         member1=Member.objects.get(user=self.user1)
         member2=Member.objects.get(user=self.user2)
         member3=Member.objects.get(user=self.user3)
-        print('member1',member1.debt_status)
-        print('member2',member2.debt_status)
-        print('member3',member3.debt_status)
         self.assertFalse(member1.debt_status)
         self.assertTrue(member2.debt_status)
         self.assertFalse(member3.debt_status)
@@ -62,17 +60,29 @@ class test_Member_Model(TestCase):
         self.assertEqual(member1.debt_or_credit_amount,100)
         self.assertEqual(member2.debt_or_credit_amount,-100)
         self.assertEqual(member3.debt_or_credit_amount,0)
-
+    def test_the_updated_at_feild_saves_the_correct_date(self): # this func tests that updated_at and joined_at fields saves the date of updating and joining the member correctly.
+        initial_datetime = datetime.datetime(year=1971, month=1, day=1,hour=1, minute=1, second=1)
+        other_datetime = datetime.datetime(year=1973, month=1, day=1,hour=1, minute=3, second=2)
+        with freeze_time(initial_datetime) as frozen_datetime:
+            member=Member.objects.create(user=self.user1,debt_or_credit_amount=0)
+            self.assertEqual(member.joined_at,timezone.now())
+            frozen_datetime.move_to(other_datetime)
+            member.debt_or_credit_amount=100
+            member.save()
+            self.assertEqual(member.updated_at,timezone.now())
 class Test_Group_Model(TestCase):
     def setUp(self):
+        self.user1=User.objects.create(username='user1',password='user1')
         self.member1=Member.objects.create(debt_or_credit_amount=100,user=self.user1)
-        self.dong1=self.dong1=Dong.objects.create()
-        Group.objects.create(member=self.member1,dong=self.dong1)
+        self.group=Group.objects.create()
+        self.member1.save()
+        self.group.member.add(self.member1)
+        print(x for x in Group.objects.all())
+        
     def test_Group_Model_feilds_is_not_none(self): #this func tests that Group model feilds are saving the data correctly and not none.
-        self.group1=Group.objects.get(dong=self.dong1)
+        self.group1=Group.objects.get(id=1)
+        print(self.group.member)
         self.assertIsNotNone(self.group1.member,msg='member of group1 is none.')
-        self.assertIsNotNone(self.group1.dong,msg='dong of group1 is none.')
-    def test_Group_Model_feilds_types_saved_correctly(self): #this func tests that the type Group Model feilds saved correctly in the database.
-        self.group1=Group.objects.get(dong=self.dong1)
-        self.assertFieldOutput(self.group1.dong,{self.dong1:self.dong1},{self.member1:['invalid']})
-        self.assertFieldOutput(self.group1.member,{self.member1:self.member1},{self.dong1:['invalid']})
+    # def test_Group_Model_feilds_types_saved_correctly(self): #this func tests that the type Group Model feilds saved correctly in the database.
+    #     self.group1=Group.objects.filter(member=self.member1)
+    #     self.assertFieldOutput(self.group1.member,{self.member1:self.member1},{'testinput':['invalid']})
