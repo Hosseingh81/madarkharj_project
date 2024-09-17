@@ -5,6 +5,7 @@ from madarkharj.models import Member,Group,Bill,Dong
 from freezegun import freeze_time
 import datetime
 from django.utils import timezone
+from . import queries
 
 class Main_User_Page_Test(TestCase):
     def create_user1(self):
@@ -21,6 +22,42 @@ class Main_User_Page_Test(TestCase):
         self.create_user1()
         response=self.access_the_main_page_url()
         self.assertTemplateUsed(response,template_name='madarkharj/main_page.html')
+
+class Query_funcs(TestCase):
+    """
+    this class tests the funcs in Query_funcs_for_Main_User_Page.
+    """
+    def setUp(self):
+        user1=User.objects.create_user(username="user1",password="user1")
+        user2=User.objects.create_user(username="user2",password="user2")
+        user3=User.objects.create_user(username="user3",password="user3")
+        self.member1=Member.objects.create(user=user1,debt_or_credit_amount=100)
+        self.member2=Member.objects.create(user=user2,debt_or_credit_amount=0)
+        self.member3=Member.objects.create(user=user3,debt_or_credit_amount=-100)
+        self.group1=Group()
+        self.group1.save()
+        self.group1.member.add(self.member1,self.member2,self.member3)
+        self.group1.save()
+        self.group2=Group()
+        self.group2.save()
+        self.group2.member.add(self.member1,self.member3)
+        self.group2.save()
+        self.group3=Group()
+        self.group3.save()
+        self.group3.member.add(self.member2,self.member3)
+        self.group3.save()
+
+
+    def test_group_query_func_returns_the_correct_data(self): #this func tests that the test_group_query in Query_funcs_for returns the correct data that means returns the correct groups based on the user.
+        groups=queries.group_query(self.user1)
+        self.assertin(self.group1,groups,msg='there is no group1 in the queryset.')
+        self.assertin(self.group2,groups,msg='there is no group2 in the queryset.')
+        self.assertNotIn(self.group3,groups,msg='there is group3 in the queryset.')
+
+
+
+
+
 #     def test_not_logged_in_user_can_not_visit_main_user_page(self): #this func tests that the not logged in user can't visit the main user page by comparing it's template with the main user page template.
 #         response=self.access_the_main_page_url()
 #         self.assertTemplateNotUsed(response,template_name='madarkharj/main_page.html')
@@ -31,6 +68,33 @@ class Main_User_Page_Test(TestCase):
 #     def test_not_logged_in_user_redirects_to_the_login_page_it_it_tries_to_visit_main_page_user(self): #this func tests that the web app redirects not loggedin user to the login page.
 #         response=self.access_the_main_page_url()
 #         self.assertRedirects(response,'accounts/login/')
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class test_Member_Model(TestCase):
     def setUp(self):
         self.user1=User.objects.create(username='user1',password='user1')
@@ -60,7 +124,7 @@ class test_Member_Model(TestCase):
         self.assertEqual(member1.debt_or_credit_amount,100)
         self.assertEqual(member2.debt_or_credit_amount,-100)
         self.assertEqual(member3.debt_or_credit_amount,0)
-    def test_the_updated_at_field_saves_the_correct_date(self): # this func tests that updated_at and joined_at fields saves the date of updating and joining the member correctly.
+    def test_the_updated_at_and_joined_at_field_saves_the_correct_date(self): # this func tests that updated_at and joined_at fields saves the date of updating and joining the member correctly.
         initial_datetime = datetime.datetime(year=1971, month=1, day=1,hour=1, minute=1, second=1)
         other_datetime = datetime.datetime(year=1973, month=1, day=1,hour=1, minute=3, second=2)
         with freeze_time(initial_datetime) as frozen_datetime:
