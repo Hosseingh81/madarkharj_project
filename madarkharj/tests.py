@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
-from madarkharj.models import Member,Group,Bill,Dong
+from madarkharj.models import Member,Group,Bill,Share
 from freezegun import freeze_time
 import datetime
 from django.utils import timezone
@@ -28,12 +28,12 @@ class Query_funcs(TestCase):
     this class tests the funcs in Query_funcs_for_Main_User_Page.
     """
     def setUp(self):
-        user1=User.objects.create_user(username="user1",password="user1")
-        user2=User.objects.create_user(username="user2",password="user2")
-        user3=User.objects.create_user(username="user3",password="user3")
-        self.member1=Member.objects.create(user=user1,debt_or_credit_amount=100)
-        self.member2=Member.objects.create(user=user2,debt_or_credit_amount=0)
-        self.member3=Member.objects.create(user=user3,debt_or_credit_amount=-100)
+        self.user1=User.objects.create_user(username="user1",password="user1")
+        self.user2=User.objects.create_user(username="user2",password="user2")
+        self.user3=User.objects.create_user(username="user3",password="user3")
+        self.member1=Member.objects.create(user=self.user1,debt_or_credit_amount=100)
+        self.member2=Member.objects.create(user=self.user2,debt_or_credit_amount=0)
+        self.member3=Member.objects.create(user=self.user3,debt_or_credit_amount=-100)
         self.group1=Group()
         self.group1.save()
         self.group1.member.add(self.member1,self.member2,self.member3)
@@ -49,9 +49,9 @@ class Query_funcs(TestCase):
 
 
     def test_group_query_func_returns_the_correct_data(self): #this func tests that the test_group_query in Query_funcs_for returns the correct data that means returns the correct groups based on the user.
-        groups=queries.group_query(self.user1)
-        self.assertin(self.group1,groups,msg='there is no group1 in the queryset.')
-        self.assertin(self.group2,groups,msg='there is no group2 in the queryset.')
+        groups=queries.queries(members=self.member1).group_guery()
+        self.assertIn(self.group1,groups,msg='there is no group1 in the queryset.')
+        self.assertIn(self.group2,groups,msg='there is no group2 in the queryset.')
         self.assertNotIn(self.group3,groups,msg='there is group3 in the queryset.')
 
 

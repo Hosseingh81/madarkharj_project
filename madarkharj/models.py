@@ -19,7 +19,7 @@ class Member(models.Model):
         else:
             return '0'
 
-class Dong(models.Model):
+class Share(models.Model):
     pass
 
 class Group(models.Model):
