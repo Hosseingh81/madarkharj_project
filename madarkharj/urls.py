@@ -3,5 +3,5 @@ from . import views
 app_name='madarkharj'
 
 urlpatterns = [
-    path("<str:username>/",views.main_page_view.as_view(),name="mainpage"),
+    path("<str:username>/",views.main_user_page_view.as_view(),name="mainpage"),
 ]
