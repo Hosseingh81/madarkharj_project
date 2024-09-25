@@ -13,6 +13,4 @@ class queries:
         # self.user=user
 
     def group_guery(self):   #this func returns a query sets of groups.
-        return Group.objects.filter(member=self.members)
-    
-    
+        return Group.objects.filter(member=self.members)[:5]

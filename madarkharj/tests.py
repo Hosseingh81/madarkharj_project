@@ -29,11 +29,12 @@ class Main_User_Page_Test(TestCase):
         self.client.force_login(user=self.user1)
         response=self.access_the_main_page_url()
         groups_based_on_member=Group.objects.filter(member=self.member1)
-        self.assertQuerySetEqual(response.context['groups'],groups_based_on_member)
-
-
-
-
+        self.assertQuerySetEqual(response.context['groups'],groups_based_on_member[:5])
+    def test_main_user_page_view_CBV_passes_the_shares_data_to_the_template(self): #this func tests wheter the context that passe from the CBV to the Main_Page_User has the correct data(correct share details filterd by the logged in member) or not.
+        self.client.force_login(user=self.user1)
+        response=self.access_the_main_page_url()
+        shares_based_on_member=Share.object.filter(group=Group.objects.filter(member=self.member1))
+        self.assertQuerySetEqual(response.context['shares'],shares_based_on_member)
     #     def test_not_logged_in_user_can_not_visit_main_user_page(self): #this func tests that the not logged in user can't visit the main user page by comparing it's template with the main user page template.
     #         response=self.access_the_main_page_url()
     #         self.assertTemplateNotUsed(response,template_name='madarkharj/main_page.html')
